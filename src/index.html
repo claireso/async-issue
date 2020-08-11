@@ -1,0 +1,80 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Requêtes asynchrones et résultats</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+  <div class="wrapper">
+    <h1>Contexte</h1>
+    <p>
+      Lorsque l'on développe des applications javascript, certains scénarios ne nous semblent pas évidents... jusqu'à
+      les reproduire, une fois, deux fois, trois fois... <br />
+      Il en est un assez courant, dès lors que l'on met en place un routeur côté client et une navigation entre même
+      ressource. <br /></p>
+    <p>Imaginons que vous souhaitez afficher les informations d'une recette. Et que sur cette page vous mettez un
+      lien
+      vers la fiche d'une autre recette. L'utilisateur va donc pouvoir naviguer de fiche en fiche, mettant à jour l'url
+      du navigateur à chaque lien suivi. Pour finir l'utilisateur décide de revenir rapidement à l'une des premières
+      recettes via la fonctionnalité "retour page précédente" de son navigateur. À ce moment, si vous avez codé de
+      manière optimiste l'utilisateur va se retrouver très certainement avec la mauvaise recette par rapport à l'URL de
+      son navigateur.
+      Les requêtes étant asynchrones, rien ne vous garantit que le résultat de chacune arrivera dans le même ordre
+      d'appel. Une fois ce constat fait, une solution doit être trouvée.
+    </p>
+    <p>
+      La façon la plus fiable d'éviter cette erreur est de pouvoir stopper la requête, ou l'action qui gère cette
+      requête avant de déclencher la nouvelle. Cette page montre deux solutions.
+    </p>
+    <p>
+      <small>Note: Les exemples s'inscrivent dans le contexte d'une application React utilisant Redux comme gestionnaire
+        d'état
+        global.</small>
+    </p>
+
+    <h2>Démonstration</h2>
+
+    <p> Voici la démonstration du problème résumée en deux boutons.</p>
+    <p>Commencez par afficher le pokemon Bulbasaur. La requête associée au bouton a été volontairement ralentie. Une
+      fois le pokemon visible, affichez le pokemon Ivysaur. </p>
+
+    <p>Reproduisez maintenant le même scénario mais n'attendez pas l'affichage du pokemon Bulbasaur.</p>
+
+    <div id="js-root-demo"></div>
+
+    <h2>Solution avec AbortController</h2>
+
+    <p>Javascript permet d'annuler une requête en cours avec l'utilisation de <a
+        href="https://developer.mozilla.org/en-US/docs/Web/API/AbortController" target="blank"
+        rel="noopener">AbortController</a>.</p>
+
+    <p>Dans le cadre d'une application React avec Redux, il est fortement recommandé d'utiliser le package
+      "@reduxjs/toolkit". Ce package fournit une fonction "createAsyncThunk" qui fournit le signal d'un
+      "AbortController" à passer à votre requête exécutée avec "fetch". Cette fonction vous donne la possibilité de
+      stopper l'exécution d'une action en cours avant d'en déclencher une seconde</p>
+
+    <div id="js-root-demo-abort-controller"></div>
+
+    <h2>Solution avec Redux-Saga</h2>
+
+    <p>L'utilisation du middleware "redux-thunk" est recommandé pour la gestion des actions asynchrones dans une
+      application React avec Redux. Mais il existe d'autres middlewares. <a href="https://redux-saga.js.org/"
+        target="blank" rel="noopener">Redux-Saga</a> en est l'un deux. La particularité
+      de ce package est l'utilisation des <a
+        href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators" target="blank"
+        rel="noopener">générateurs</a> qui permet donc de controller étape par étape une
+      action. En utilisant l'effet "takeLatest" de ce package il est donc possible d'ignorez une action en cours pour ne
+      traiter que la dernière.
+    </p>
+
+    <div id="js-root-demo-saga"></div>
+  </div>
+
+  <script src="js/main.js"></script>
+
+</body>
+
+</html>
